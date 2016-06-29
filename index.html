@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body>
+  <puppy-app></puppy-app>
+  <script src="/node_modules/zone.js/dist/zone.js"></script>
+  <script src="/node_modules/reflect-metadata/Reflect.js"></script>
+  <script src="/node_modules/systemjs/dist/system.js"></script>
+  <script src="./dist/system-config.js"></script>
+  <script>
+    System.import('./dist/main');
+    navigator.serviceWorker
+      .register('./dist/sw.js');
+  </script>
+</body>
+</html>
