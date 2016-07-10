@@ -1,8 +1,8 @@
-## Introduction
+# Introduction
 
 Now we're going to take a look at another part of the Angular Mobile Toolkit - the App Shell Runtime Parser. The Runtime Parser is a library which automatically generates the App Shell of our application and caches it locally. This way once the user navigates to a page in our application she will instantly get a minimum working UI. You can find more about the application shell concept in the context of PWA on the [following link](https://developers.google.com/web/updates/2015/11/app-shell?hl=en).
 
-## Mobile Toolkit App Shell
+# Introduction to the Runtime Parser
 
 The Angular App Shell Runtime Parser works in together with the App Shell directives, described in the [previous section](https://mobile.angular.io/guides/app-shell.html), and [Angular Universal](https://universal.angular.io).
 
@@ -217,7 +217,7 @@ Once we've successfully fetched the page that is intended to be used as an App S
 
 Finally, when the `parseDoc`'s execution completes, we cache the app shell locally.
 
-### App Shell Parsing
+### Template Transformations
 
 In order to get a better understanding of what is going on behind the scene, lets take a look at the response that Universal is going to return once we make a request to `APP_SHELL_URL`:
 
@@ -297,8 +297,7 @@ self.addEventListener('fetch', function (event: any) {
 
 Once the `fetch` event is triggered, we match the request using the `match` method of the Runtime Parser. In case the URL of the request matches any of the routes defined in `ROUTE_DEFINITIONS`, as response we are going to get the App Shell from the cache. Otherwise, we are going to fallback to the network.
 
-### Example
+## Example
 
 Lets suppose the user navigates to `/about/42`. This action will trigger the `fetch` method of the App Shell Service Worker, which will invoke the callback that we've registered above. Inside of it, we'll pass the target request to the `match` method of the Runtime Parser. Since in the `ROUTE_DEFINITIONS` we have the route definition `/about/:id` the request will be matched and the Runtime Parser will return a response with body the application cached from the cache with name `SHELL_PARSER_CACHE_NAME`.
-
 
