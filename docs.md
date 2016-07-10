@@ -5,13 +5,13 @@ Now we're going to take a look at another part of the Angular Mobile Toolkit - t
 - Automatically generates the app shell of our application by a predefined template.
 - Provides the app shell template from the local cache automatically for each page that uses it.
 
-This way, when the user navigates to a page in the application she will instantly get a minimum working UI that will be lated replaced with the page's full functionality. You can find more about the application shell concept in the context of PWA on the [following link](https://developers.google.com/web/updates/2015/11/app-shell?hl=en).
+This way, when the user navigates to a page in the application she will instantly get a minimum working UI that will be later replaced with the page's full functionality. You can find more about the application shell concept in the context of PWA on the [following link](https://developers.google.com/web/updates/2015/11/app-shell?hl=en).
 
 # Introduction to the Runtime Parser
 
-The Angular App Shell Runtime Parser works in together with the App Shell directives, described in the [previous section](https://mobile.angular.io/guides/app-shell.html), and [Angular Universal](https://universal.angular.io).
+The Angular App Shell Runtime Parser works together with the App Shell directives, described in the [previous section](https://mobile.angular.io/guides/app-shell.html), and [Angular Universal](https://universal.angular.io).
 
-Now lets explore the basic features of the parser!
+Now lets explore the features of the parser!
 
 First, lets suppose we have the following "Hello Mobile" component:
 
