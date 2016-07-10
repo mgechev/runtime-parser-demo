@@ -3,13 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <title></title>
+  <style>
+    md-spinner[_ngcontent-vkb-1] {
+      margin: 24px auto 0;
+    }
+    .icon[_ngcontent-vkb-1] {
+      width: 40px;
+      height: 40px;
+      display: inline-block;
+      margin-right: 5px;
+      background-size: 40px 40px;
+    }
+    .icon.ng[_ngcontent-vkb-1] {
+      background-image: url(./assets/angular.png);
+    }
+  </style>
+  <style>
+/** * Mixin that creates a new stacking context. * see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context */ /** * This mixin hides an element visually. * That means it's still accessible for screen-readers but not visible in view. */ /** * Forces an element to grow to fit floated contents; used as as an alternative to * `overflow: hidden;` because it doesn't cut off contents. */ /** * A mixin, which generates temporary ink ripple on a given component. * When $bindToParent is set to true, it will check for the focused class on the same selector as you included * that mixin. * It is also possible to specify the color palette of the temporary ripple. By default it uses the * accent palette for its background. */ md-toolbar { display: -webkit-box; display: -ms-flexbox; display: flex; box-sizing: border-box; width: 100%; min-height: 64px; font-size: 20px; font-weight: 400; font-family: Roboto, "Helvetica Neue", sans-serif; padding: 0 16px; -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; background: whitesmoke; color: rgba(0, 0, 0, 0.87); } md-toolbar.md-primary { background: #009688; color: white; } md-toolbar.md-accent { background: #9c27b0; color: rgba(255, 255, 255, 0.870588); } md-toolbar.md-warn { background: #f44336; color: white; } md-toolbar md-toolbar-row { display: -webkit-box; display: -ms-flexbox; display: flex; box-sizing: border-box; width: 100%; height: 64px; -webkit-box-orient: horizontal; -webkit-box-direction: normal; -ms-flex-direction: row; flex-direction: row; -webkit-box-align: center; -ms-flex-align: center; align-items: center; }
+  </style>
+  <style>
+[_nghost-vkb-3] { display: block;  height: 100px; width: 100px;  } [_nghost-vkb-3] svg { height: 100%; width: 100%; -webkit-transform-origin: center; transform-origin: center; } [_nghost-vkb-3] path { fill: transparent; stroke: #00897b;  stroke-width: 10px; } [_nghost-vkb-3][color='accent'] path { stroke: #8e24aa; } [_nghost-vkb-3][color='warn'] path { stroke: #e53935; } [_nghost-vkb-3][mode='indeterminate'] { -webkit-animation-duration: 5250ms, 2887.5ms; animation-duration: 5250ms, 2887.5ms; -webkit-animation-name: md-progress-circle-sporadic-rotate, md-progress-circle-linear-rotate; animation-name: md-progress-circle-sporadic-rotate, md-progress-circle-linear-rotate; -webkit-animation-timing-function: cubic-bezier(0.35, 0, 0.25, 1), linear; animation-timing-function: cubic-bezier(0.35, 0, 0.25, 1), linear; -webkit-animation-iteration-count: infinite; animation-iteration-count: infinite; -webkit-transition: none; transition: none; }  @-webkit-keyframes md-progress-circle-linear-rotate { 0% { -webkit-transform: rotate(0deg); transform: rotate(0deg); } 100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); } } @keyframes md-progress-circle-linear-rotate { 0% { -webkit-transform: rotate(0deg); transform: rotate(0deg); } 100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); } } @-webkit-keyframes md-progress-circle-sporadic-rotate { 12.5% { -webkit-transform: rotate(135deg); transform: rotate(135deg); } 25% { -webkit-transform: rotate(270deg); transform: rotate(270deg); } 37.5% { -webkit-transform: rotate(405deg); transform: rotate(405deg); } 50% { -webkit-transform: rotate(540deg); transform: rotate(540deg); } 62.5% { -webkit-transform: rotate(675deg); transform: rotate(675deg); } 75% { -webkit-transform: rotate(810deg); transform: rotate(810deg); } 87.5% { -webkit-transform: rotate(945deg); transform: rotate(945deg); } 100% { -webkit-transform: rotate(1080deg); transform: rotate(1080deg); } } @keyframes md-progress-circle-sporadic-rotate { 12.5% { -webkit-transform: rotate(135deg); transform: rotate(135deg); } 25% { -webkit-transform: rotate(270deg); transform: rotate(270deg); } 37.5% { -webkit-transform: rotate(405deg); transform: rotate(405deg); } 50% { -webkit-transform: rotate(540deg); transform: rotate(540deg); } 62.5% { -webkit-transform: rotate(675deg); transform: rotate(675deg); } 75% { -webkit-transform: rotate(810deg); transform: rotate(810deg); } 87.5% { -webkit-transform: rotate(945deg); transform: rotate(945deg); } 100% { -webkit-transform: rotate(1080deg); transform: rotate(1080deg); } }
+  </style>
 </head>
 <body>
-  <header shellRender>
-    <h1>App Shell</h1>
-  </header>
-  <div shellNoRender>
-    Some dynamically loaded content
-  </div>
+  <hello-mobile-app _nghost-vkb-1="">
+    <md-toolbar _ngcontent-vkb-1=""><div class="md-toolbar-layout"> <md-toolbar-row>
+      <div _ngcontent-vkb-1="" class="icon ng"></div>
+      Hello Mobile
+     </md-toolbar-row>  </div></md-toolbar>
+    <!--template bindings={}--><!--shellRender(<md-spinner _ngcontent-vkb-1="" mode="indeterminate" role="progressbar" _nghost-vkb-3=""> <svg _ngcontent-vkb-3="" preserveAspectRatio="xMidYMid meet" viewBox="0 0 100 100"> <path _ngcontent-vkb-3=""></path> </svg> </md-spinner>)-->
+    <!--template bindings={}--><h1 _ngcontent-vkb-1="" shellNoRender="">App is Fully Rendered</h1>
+  </hello-mobile-app>
 </body>
 </html>

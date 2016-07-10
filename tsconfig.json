@@ -20,6 +20,7 @@
   },
   "compileOnSave": false,
   "files": [
+    "app/sw.ts",
     "app/main.ts",
     "typings/index.d.ts",
     "app/system-config.ts"
