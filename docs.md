@@ -1,21 +1,23 @@
 # Introduction
 
-Now we're going to take a look at another part of the Angular Mobile Toolkit - the App Shell Runtime Parser. The Runtime Parser is a library which does the following:
+*This guide assumes that the [App Shell guide](https://mobile.angular.io/guides/app-shell.html) has been completed.*
 
-- Automatically generates the app shell of our application by a predefined template.
-- Provides the app shell template from the local cache automatically for each page that uses it.
+Now we're going to take a look at another part of the Angular Mobile Toolkit - the App Shell Runtime Parser. The Runtime Parser is a library which has the following features:
 
-This way, when the user navigates to a page in the application she will instantly get a minimum working UI that will be later replaced with the page's full functionality. You can find more about the application shell concept in the context of PWA on the [following link](https://developers.google.com/web/updates/2015/11/app-shell?hl=en).
+- Automatically generates the app shell of our application by using a predefined template.
+- Provides the app shell template from the local cache automatically for each view that should use it.
+
+This way, when the user navigates to a different view in the application she will instantly get a minimal working UI that will be later replaced with the view's full functionality. You can find more about the application shell concept in the context of [Progressive Web Applications](https://developers.google.com/web/progressive-web-apps/) (PWA) on the [following link](https://developers.google.com/web/updates/2015/11/app-shell?hl=en).
 
 # Introduction to the Runtime Parser
 
 The Angular App Shell Runtime Parser works together with the App Shell directives, described in the [previous section](https://mobile.angular.io/guides/app-shell.html), and [Angular Universal](https://universal.angular.io).
 
-Now lets explore the features of the parser!
+Now lets dig deeper in the features of the parser!
 
 First, lets suppose we have the following "Hello Mobile" component:
 
-```ts
+```typescript
 import { Component } from '@angular/core';
 import { APP_SHELL_DIRECTIVES } from '@angular/app-shell';
 import { MdToolbar } from '@angular2-material/toolbar';
@@ -54,7 +56,7 @@ export class HelloMobileAppComponent {
 
 ...and in Universal, we bootstrap our application in the following way:
 
-```ts
+```typescript
 import { provide } from '@angular/core';
 import { APP_BASE_HREF } from '@angular/common';
 import { APP_SHELL_RUNTIME_PROVIDERS } from '@angular/app-shell';
@@ -85,58 +87,64 @@ export const options = {
 };
 ```
 
-In the example above, we prerender the component using Universal and the `APP_SHELL_RUNTIME_PROVIDERS`. Once the user opens the our prerendered application she will see the following:
+In the example above, we prerender the component using Universal and the `APP_SHELL_RUNTIME_PROVIDERS`. Once the user opens the our prerendered application she will see the following user interface:
 
-![](/images/prerendered-universal.png)
+<img src="/images/prerendered-universal.png" width="300">
 
-This is how the app will look once it has been completely rendered as well. However, for our App Shell we want to provide only the minimal UI which shows that the app is working, and its initialization is in progress. One way to do this is by using the `APP_SHELL_BUILD_PROVIDERS` instead of `APP_SHELL_RUNTIME_PROVIDERS`. This way Universal will strip the content marked with the `shellNoRender` directive and output only the part of the application that is intended to be visualized as application shell.
+This is how the app will look once it has been completely rendered as well. However, for our app shell we want to provide only the minimal UI which shows that the app is working and its initialization is in progress. One way to do this is by using the `APP_SHELL_BUILD_PROVIDERS` instead of `APP_SHELL_RUNTIME_PROVIDERS`. This way Universal will strip the content marked with the `shellNoRender` directive and output only the part of the application that is intended to be visualized as application shell.
 
 Unfortunately, this way we introduce the following problems:
 
-- We cannot reuse the given page as app shell for other routes in our application.
-- We must annotate each individual page which should be progressively loaded with `shellRender` and `shellNoRender` directives.
+- We cannot reuse the given view as the app shell for other routes in our application.
+- We must annotate the template of each individual route component which should be progressively loaded with `shellRender` and `shellNoRender` directives.
 
-On top of that, if the final app shell has references to external images, users with slow Internet connection will not have the best experience possible. For instance, in the example above the Angular logo in the header is an external resource which needs to be fetched via the network.
+On top of that, if the final app shell has references to external images, users with slow Internet connection will not have the best experience possible. For instance, in the example above the Angular logo in the header is an external resource which needs to be fetched from the network.
 
 By using the Angular App Shell Runtime Parser in a Service Worker we can solve all of these issues! Lets see how!
 
 # Exploring the Runtime Parser
 
-First, take a look at a sample Service Worker which uses the Runtime Parser:
+First, lets take a look at a sample Service Worker which uses the Runtime Parser:
 
-```ts
+```typescript
 importScripts(
   '/node_modules/reflect-metadata/Reflect.js',
   '/node_modules/systemjs/dist/system.js',
-  './system-config.js'
+  '/system-config.js'
 );
 
-let ngShellParser: any;
+const context = <any>self;
 
-const SHELL_PARSER_CACHE_NAME = 'app-shell:cache';
-const APP_SHELL_URL = '/shell.html';
+const SHELL_PARSER_CACHE_NAME = 'shell-cache';
+const APP_SHELL_URL = '/home';
 const INLINE_IMAGES: string[] = ['png', 'svg', 'jpg'];
 const ROUTE_DEFINITIONS = [
       '/home',
-      '/about/:id',
+      '/about/:id'
     ];
 
 self.addEventListener('install', function (event: any) {
   const parser = System.import('@angular/app-shell')
     .then((m: any) => {
-      ngShellParser = m.shellParserFactory({
-        SHELL_PARSER_CACHE_NAME,
+      context.ngShellParser = m.shellParserFactory({
         APP_SHELL_URL,
         ROUTE_DEFINITIONS,
+        SHELL_PARSER_CACHE_NAME,
         INLINE_IMAGES
       });
-      return ngShellParser;
+      return context.ngShellParser;
     })
-    .then(() => ngShellParser.fetchDoc())
-    .then((res: Response) => ngShellParser.parseDoc(res))
-    .then((strippedResponse: Response) => {
+    .then(() => context.ngShellParser.fetchDoc())
+    .then((res: any) => context.ngShellParser.parseDoc(res))
+    .then((strippedResponse: any) => {
       return (<any>self).caches.open(SHELL_PARSER_CACHE_NAME)
-        .then((cache: any) => cache.put(APP_SHELL_URL, strippedResponse));
+        .then((cache: any) => {
+          strippedResponse
+            .clone()
+            .text()
+            .then((txt: string) => console.log(txt));
+          return cache.put(APP_SHELL_URL, strippedResponse);
+        });
     })
     .catch((e: any) => console.error(e));
   event.waitUntil(parser);
@@ -144,14 +152,12 @@ self.addEventListener('install', function (event: any) {
 
 self.addEventListener('fetch', function (event: any) {
   event.respondWith(
-    ngShellParser.match(event.request)
+    context.ngShellParser.match(event.request)
       .then((response: any) => {
         if (response) return response;
         return (<any>self).caches.match(event.request)
           .then((response: any) => {
-            if (response) {
-              return response;
-            }
+            if (response) return response;
             return (<any>self).fetch(event.request);
           })
       })
@@ -163,11 +169,9 @@ Since the logic in the snippet above is not trivial, lets explore it step-by-ste
 
 ## Step 1 - Configuration
 
-```ts
-let ngShellParser: any;
-
+```typescript
 const SHELL_PARSER_CACHE_NAME = 'app-shell:cache';
-const APP_SHELL_URL = '/shell.html';
+const APP_SHELL_URL = '/home';
 const INLINE_IMAGES: string[] = ['png', 'svg', 'jpg'];
 const ROUTE_DEFINITIONS = [
       '/home',
@@ -175,21 +179,20 @@ const ROUTE_DEFINITIONS = [
     ];
 ```
 
-Initially we declare a global variable called `ngShellParser`. As its value we are going to set the instance of the Runtime Parser, once it has been loaded.
+First, we declare a constant called `SHELL_PARSER_CACHE_NAME`. This is the name of the cache where we are going to store the app shell's template once it has been generated.
 
-The `SHELL_PARSER_CACHE_NAME` is the name of the cache which we are going to use in order to store the app shell's template, once it has been generated.
+The `APP_SHELL_URL` is the URL of the view which template we are going to use in order to generate the app shell.
 
-The `APP_SHELL_URL` is the URL of the page that we are going to use in order to generate our app shell.
+Since our final goal is to render the entire app shell as quickly as possible, we want to inline all the referenced within its elements resources. The next step of our declarations is the `INLINE_IMAGES` array. It provides a list of of image extensions that we want to be inlined as base64 strings.
 
-Next, we declare a list of routes that we want to be handled by the parser. For instance, once the user visits the page `/home` the first thing that we want to do is to render the cached app shell. Right after the target page has been initialized and all the associated to it external resources are available, its content will be rendered on the place of the app shell. As we can see from the route `/about/:id`, the `ROUTE_DEFINITIONS` support wildcards, similar to the parameters of the routes used by the Angular's router.
+Finally, we declare a list of routes that we want to be handled by the parser. For instance, once the user visits the `/home` route the first thing that we want to do is to render the cached app shell. Right after the root component of the route has been initialized and all the associated to it external resources are available, its content will be rendered on the place of the app shell. As we can see from the route `/about/:id`, the `ROUTE_DEFINITIONS` supports wildcards, similar to the parameters in the Angular's router.
 
-Since our final goal is to render the entire app shell as quickly as possible, we want to inline all the referenced within its elements resources. The final step of our declarations is the `INLINE_IMAGES` array. It provides a list of of image extensions that we want to be inlined as base64 strings.
 
-## Step 2 - Handling the install event
+## Step 2 - Handling the Install Event
 
 As next step, lets see how we are going to handle the Service Worker's `install` event:
 
-```ts
+```typescript
 self.addEventListener('install', function (event: any) {
   const parser = System.import('@angular/app-shell')
     .then((m: any) => {
@@ -212,13 +215,13 @@ self.addEventListener('install', function (event: any) {
 });
 ```
 
-Once the Service Worker's install event has been triggered, we load the Runtime Parser using SystemJS and instantiate it with the `shellParserFactory` method. Notice that as arguments to the factory method we pass an object literal with the constants that we defined above.
+Once the Service Worker's install event has been triggered, we load the Runtime Parser using SystemJS and instantiate it with the `shellParserFactory` method. Notice that as arguments to the factory method we pass an object literal with the constants that we defined above. Once the factory method returns the Runtime Parser, we attach it as a property to the global context.
 
 Right after we instantiate the Runtime Parser, we invoke its `fetchDoc` method. The `fetchDoc` method is going to make an HTTP GET request to the `APP_SHELL_URL` that we declared above.
 
 Once we've successfully fetched the page that is intended to be used as a template for the app shell, we invoke the `parseDoc` method. This method will perform all the required transformations over the fetched template in order to generate the final application shell.
 
-Finally, when the `parseDoc`'s execution completes, we cache the app shell template locally.
+Finally, when the `parseDoc`'s execution completes, we cache the app shell's template locally.
 
 ### Template Transformations
 
@@ -256,6 +259,7 @@ In order to get a better understanding of what the `parseDoc` method does, lets 
   <script src="/node_modules/rxjs/bundles/Rx.js?1468224624496"></script>
 
   <script>
+  // Application initialization
   System.import('app/main')
     .catch(function (e) {
       console.error(e,
@@ -271,9 +275,9 @@ Notice the following:
 - Inside the `hello-mobile-app` element the app shell of the application is wrapped inside `<!--shellRender(...)-->`.
 - The elements which are not supposed to be part of the application shell are annotated with the `shellNoRender` attribute (note that the attributes are case sensitive).
 
-Once we invoke the `parseDoc` method of the Runtime Parser with response that as body has the template above, the following actions will be performed:
+Once we invoke the `parseDoc` method with argument a response which as body has the template above, the following actions will be performed:
 
-- All the referenced within the template images that match any of the extensions defined in `INLINE_IMAGES` will be inlined as base64 strings.
+- All the referenced within the template images that match any of the file extensions defined in `INLINE_IMAGES` will be inlined as base64 strings.
 - All the elements annotated with `shellNoRender` attribute will be stripped.
 - The content of all `<!--shellRender(...)-->` comments will be used as part of the application shell.
 
@@ -303,11 +307,13 @@ Once the `fetch` event is triggered, we match the request using the `match` meth
 
 ## Example
 
-Lets suppose the user navigates to `/about/42`. This action will trigger the `fetch` method of the Service Worker, which will invoke the associated callback. Inside of it's body, we pass the target request to the `match` method of the Runtime Parser. Since in the `ROUTE_DEFINITIONS` we have the route `/about/:id` the Runtime Parser will return a response with body the template of the application shell.
+Once the user opens our application and the App Shell Service Worker is registered successfully, its install event will be triggered. This will load the Runtime Parser and later the template located at the `APP_SHELL_URL`. Once the template is available, we are going to parse it using the Runtime Parser and store the result locally. This means that during the very first request to our application the App Shell Service Worker wouldn't have taken control yet.
 
-It will be taken from the cache with name `SHELL_PARSER_CACHE_NAME`. The app shell will be instantly rendered by the browser. In the mean time Angular will start fetching all the required by the page `/about/42` external resources in background. Once they have been loaded successfully, the application shell will be replaced with the requested page.
+Now, lets suppose the user navigates to `/about/42`. This action will trigger the `fetch` method of the Service Worker, which will invoke the associated callback. Inside of it's body, we pass the target request to the `match` method of the Runtime Parser. Since in the `ROUTE_DEFINITIONS` we have the route `/about/:id` the Runtime Parser will return a response with body the template of the application shell.
+
+The template will be taken from a cache with name `SHELL_PARSER_CACHE_NAME`. The App Shell will be instantly rendered by the browser. In the mean time Angular will start fetching all the required by the page `/about/42` external resources in background. Once they have been loaded successfully, the Application Shell will be replaced with the requested page.
 
 The final result can be seen on the gif below:
 
-![](/images/app-shell-parser-demo.gif)
+<img src="/images/app-shell-parser-demo.gif" width="300">
 
