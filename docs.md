@@ -226,41 +226,42 @@ In order to get a better understanding of what the `parseDoc` method does, lets 
 
 ```html
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title></title>
-  <style>
-    md-spinner[_ngcontent-vkb-1] {
-      margin: 24px auto 0;
-    }
-    .icon[_ngcontent-vkb-1] {
-      width: 40px;
-      height: 40px;
-      display: inline-block;
-      margin-right: 5px;
-      background-size: 40px 40px;
-    }
-    .icon.ng[_ngcontent-vkb-1] {
-      background-image: url(./assets/angular.png);
-    }
-  </style>
-  <style>
-  </style>
-  /* Angular 2 mobile styles */
-  <style>
-  /* Angular 2 mobile styles */
-  </style>
-</head>
+<html lang="en"><head>
+  <meta charset="utf-8">
+    <style>
+      /* App styles */
+    </style>
+    <style>
+      /* Material toolbar styles */
+    </style>
+    <style>
+      /* Material circle styles */
+    </style>
+  </head>
 <body>
-  <hello-mobile-app _nghost-vkb-1="">
-    <md-toolbar _ngcontent-vkb-1=""><div class="md-toolbar-layout"> <md-toolbar-row>
-      <div _ngcontent-vkb-1="" class="icon ng"></div>
+  <hello-mobile-app _nghost-gcc-1="">
+    <md-toolbar _ngcontent-gcc-1=""><div class="md-toolbar-layout"> <md-toolbar-row>
+      <div _ngcontent-gcc-1="" class="icon ng"></div>
       Hello Mobile
      </md-toolbar-row>  </div></md-toolbar>
-    <!--template bindings={}--><!--shellRender(<md-spinner _ngcontent-vkb-1="" mode="indeterminate" role="progressbar" _nghost-vkb-3=""> <svg _ngcontent-vkb-3="" preserveAspectRatio="xMidYMid meet" viewBox="0 0 100 100"> <path _ngcontent-vkb-3=""></path> </svg> </md-spinner>)-->
-    <!--template bindings={}--><h1 _ngcontent-vkb-1="" shellNoRender="">App is Fully Rendered</h1>
+    <!--template bindings={}--><!--shellRender(<md-spinner _ngcontent-gcc-1="" mode="indeterminate" role="progressbar" _nghost-gcc-3=""> <svg _ngcontent-gcc-3="" preserveAspectRatio="xMidYMid meet" viewBox="0 0 100 100"> <circle _ngcontent-lqi-3="" cx="50px" cy="50px" r="40px" style="stroke-dashoffset:251.3274;"></circle> </svg> </md-spinner>)-->
+    <!--template bindings={}--><h1 _ngcontent-gcc-1="" shellNoRender="">App is Fully Rendered</h1>
   </hello-mobile-app>
+
+  <script src="/node_modules/core-js/client/shim.min.js?1468224624471"></script>
+  <script src="/node_modules/systemjs/dist/system.src.js?1468224624493"></script>
+  <script src="./system-config.js"></script>
+
+  <script src="/node_modules/zone.js/dist/zone.js?1468224624495"></script>
+  <script src="/node_modules/rxjs/bundles/Rx.js?1468224624496"></script>
+
+  <script>
+  System.import('app/main')
+    .catch(function (e) {
+      console.error(e,
+        'Report this error at https://github.com/mgechev/angular2-seed/issues');
+    });
+  </script>
 </body>
 </html>
 ```
@@ -305,4 +306,8 @@ Once the `fetch` event is triggered, we match the request using the `match` meth
 Lets suppose the user navigates to `/about/42`. This action will trigger the `fetch` method of the Service Worker, which will invoke the associated callback. Inside of it's body, we pass the target request to the `match` method of the Runtime Parser. Since in the `ROUTE_DEFINITIONS` we have the route `/about/:id` the Runtime Parser will return a response with body the template of the application shell.
 
 It will be taken from the cache with name `SHELL_PARSER_CACHE_NAME`. The app shell will be instantly rendered by the browser. In the mean time Angular will start fetching all the required by the page `/about/42` external resources in background. Once they have been loaded successfully, the application shell will be replaced with the requested page.
+
+The final result can be seen on the gif below:
+
+![](/images/app-shell-parser-demo.gif)
 
